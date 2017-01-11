@@ -1,0 +1,61 @@
+include "global.tbh"
+
+'--------------------------------------------------------------------
+const COMMAND_STR=chr(2)+"01EABC"+chr(13)
+const TIMEOUT_CONST=2
+
+'--------------------------------------------------------------------
+dim timeout_counter as byte
+
+'====================================================================
+sub on_sys_init()
+	beep.divider=5000
+	
+	net.ip = "192.168.1.115"
+	
+	sock.num=0
+	sock.protocol=PL_SOCK_PROTOCOL_TCP
+	sock.targetip="192.168.1.56"
+	sock.targetport=4001
+	sock.txbuffrq(1) 
+	sock.rxbuffrq(1) 
+	sys.buffalloc 
+	sock.connect
+end sub
+
+'--------------------------------------------------------------------
+sub on_sys_timer()
+	if sock.statesimple=PL_SSTS_EST then
+		sock.setdata(COMMAND_STR)
+		sock.send
+
+		if timeout_counter=0 then
+			beep.play("B-",PL_BEEP_NOINT)
+		else
+			timeout_counter=timeout_counter-1
+		end if
+		
+	end if
+end sub
+
+'--------------------------------------------------------------------
+sub on_sock_event(newstate as pl_sock_state, newstatesimple as pl_sock_state_simple)
+	if newstatesimple=PL_SSTS_CLOSED then
+		sock.connect
+		beep.play("BBBBBBBB----",PL_BEEP_NOINT)
+	end if
+
+	if newstatesimple=PL_SSTS_EST then
+		pat.play("G~",PL_PAT_CANINT)
+	else
+		pat.play("-",PL_PAT_CANINT)
+	end if
+
+end sub
+
+'--------------------------------------------------------------------
+sub on_sock_data_arrival()
+	dim  s as string
+	s=sock.getdata(255)
+	timeout_counter=TIMEOUT_CONST
+end sub
