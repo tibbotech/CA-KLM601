@@ -1,5 +1,5 @@
-# CA-KLM601-BurnIn
+# KLM610 Burn-in Test
 
-To download the most recent project without installing GIT, please press the green "Clone or Download" button and select "Download ZIP".
+This is a little program we developed in-house to test our KLM610 devices. It keeps sending a command string over and over again, and then measures how long the KLM610 takes to respond. If the KLM610 doesn't respond on time, the burn-in test causes the buzzer to beep.
 
-For more detail about this project, please visit <a href="http://tibbo.com/programmable/applications/examples/klm610.html" target="_blank">Project Description Page</a>
+The program is also smart enough to re-establish the connection if it breaks.
